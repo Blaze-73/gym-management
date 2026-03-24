@@ -29,6 +29,15 @@ class MembershipController extends Controller
 
         $start = Carbon::parse($request->start_date);
         $end = $start->copy()->addDays($plan->duration);
+
+        $membership = Membership::create([
+        'user_id' => $request->user_id,
+        'plan_id' => $request->plan_id,
+        'start_date' => $start,
+        'end_date' => $end,
+        'status' => 'active'
+        ]);
+        return response()->json($membership,201);
     }
 
     /**
@@ -36,7 +45,10 @@ class MembershipController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $membership = Membership::with(['user','plan'])->find($id);
+        if(!$membership){
+            return response()->json(['message' => 'Membership not found']);
+        }
     }
 
     /**
@@ -44,7 +56,12 @@ class MembershipController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $membership = Membership::find($id);
+         if(!$membership){
+            return response()->json(['message' => 'membership not found']);
+         }
+         $membership->update($request->all());
+         return response()->json($membership);
     }
 
     /**
@@ -52,6 +69,11 @@ class MembershipController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $membership = Membership::find($id);
+        if (!$membership){
+            return response()->json(['message' => 'Membership not found']);
+        }
+        $membership->delete();
+        return response()->json('membership deleted');
     }
 }
