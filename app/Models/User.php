@@ -56,4 +56,7 @@ class User extends Authenticatable
     public function isClient():bool{
         return $this->role === 'client';
     }
+    public function attendances(){
+        return $this->hasMany(Attendance::class);
+    }
 }
